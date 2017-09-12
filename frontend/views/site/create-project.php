@@ -8,6 +8,8 @@ use yii\widgets\ActiveForm;
 
 $this->title ='Create Project';
 
+/*var_dump(Yii::$app->user->id);
+die();*/
 ?>
 
 <div class="site-index">
@@ -28,13 +30,9 @@ $this->title ='Create Project';
                 <?= $form->field($model, 'description')->textarea(['row' => '6'])->label('Description:') ?>
                 <?= $form->field($model, 'abbreviation')->label('Abbreviation:') ?>
 
-                <?php
-                echo $form->field($model,'createdby')->dropDownList(
-                    $users,
-                    ['prompt'=>'Select User', 'class' => '']
-                )->label('Created by:');
-                ?>
-
+                <?= $form->field($model, 'createdby')
+                    ->hiddenInput(['value' => Yii::$app->user->id])
+                    ->label(false); ?>
                 <div class="form-group field-createprojectform-createdat">
                     <label for="createprojectform-createdat" class="control-label">Created at:</label>
                     <?= yii\jui\DatePicker::widget([

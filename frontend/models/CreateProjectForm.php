@@ -15,7 +15,7 @@ class CreateProjectForm extends Model
     public function rules()
     {
         return [
-            [['name', 'abbreviation'], 'required']
+            [['name', 'abbreviation'], 'required'],
         ];
     }
 }

@@ -35,11 +35,10 @@ $this->title = 'Create Form';
                 )->label('Project id:');
                 ?>
                 <?= $form->field($model, 'description')->label('Description:') ?>
+                <?= $form->field($model, 'createdby')
+                    ->hiddenInput(['value' => Yii::$app->user->id])
+                    ->label(false); ?>
                 <?php
-                echo $form->field($model,'createdby')->dropDownList(
-                    $users,
-                    ['prompt'=>'Select Project', 'class' => '']
-                )->label('Created by:');
                 echo $form->field($model,'developerid')->dropDownList(
                     $users,
                     ['prompt'=>'Select Project', 'class' => '']
