@@ -1,6 +1,10 @@
 <?php
 
 /* @var $this yii\web\View */
+/* @var $projectName app\models\Task */
+/* @var $project app\models\Task */
+/* @var $setTable app\models\Task */
+/* @var $tasknr app\models\Task */
 
 use yii\helpers\Html;
 
@@ -12,7 +16,7 @@ $this->title = 'Task';
 
         <div class="row breadcrumb">
             <a href="">Projects</a>
-            <a href="<?= $backToPoject ?>"><?= HTML::encode($projectName) ?></a>
+            <?= HTML::a($projectName, ['project', 'id' => $project])?>
         </div>
 
         <div class="row">
@@ -22,7 +26,7 @@ $this->title = 'Task';
                 <div class="col-lg-9">
 
                     <div class="panel panel-default">
-                        <div class="panel-heading"><?= HTML::encode($projectName) .'-' . HTML::encode($tasknr) ?></div>
+                        <div class="panel-heading"><?= HTML::encode($projectName) .'-' . HTML::encode($id) ?></div>
                         <div class="panel-body">
                             <input type="text" value="<?= HTML::encode($name) ?>" />
                             <textarea class="form-control" rows="3"><?= HTML::encode($description) ?></textarea>

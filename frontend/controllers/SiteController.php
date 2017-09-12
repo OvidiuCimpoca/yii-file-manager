@@ -3,7 +3,6 @@ namespace frontend\controllers;
 
 use Yii;
 use yii\base\InvalidParamException;
-use yii\db\Query;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
@@ -224,7 +223,6 @@ class SiteController extends Controller
     // This is where I get project information for the project list
     public function actionProjects()
     {
-        $goTo = Url::base(true) . "?r=site/project&id=";
         $request = Yii::$app->request;
         $get = $request->get();
         // Replace the if with a check to see if the user has permission
@@ -237,7 +235,6 @@ class SiteController extends Controller
             return $this->render('projects',
                 [
                     'hasPermission' => 1,
-                    'goTo' => $goTo,
                     'projects' => $projects
                 ]);
         }
@@ -251,7 +248,6 @@ class SiteController extends Controller
     // This is where I get task information for the task list
     public function actionProject()
     {
-        $goTo = Url::base(true) . "?r=site/task&id=";
         $request = Yii::$app->request;
         $get = $request->get();
         // Also check if tasks belong the the user, if he can see them
@@ -264,7 +260,6 @@ class SiteController extends Controller
             return $this->render('project',
                 [
                     'hasPermission' => 1,
-                    'goTo' => $goTo,
                     'tasks' => $tasks
                 ]);
         }
@@ -307,7 +302,6 @@ class SiteController extends Controller
                     'name' => $task["name"],
                     'project' => $task["projectid"],
                     'projectName' => $task["projectname"],
-                    'tasknr' => $task["tasknr"],
                     'description' => $task["description"],
                     'createdby' => $task["createdby"],
                     'developerid' => $task["developerid"],
@@ -329,7 +323,6 @@ class SiteController extends Controller
                 'id' => '',
                 'name' => '',
                 'project' => '',
-                'tasknr' => '',
                 'description' => '',
                 'developer' => '',
                 'status' => '',
@@ -349,16 +342,41 @@ class SiteController extends Controller
 
         if($model->load(Yii::$app->request->post()) && $model->validate()){
 
-            return $this->render('create-task-confirm', ['model' => $model]);
+            $formPost = Yii::$app->request->post()['CreateTaskForm'];
+            $task = new Task();
+            $task->name = $formPost['name'];
+            $task->projectid = $formPost['projectid'];
+            $task->description = $formPost['description'];
+            $task->createdby = $formPost['createdby'];
+            $task->developerid = $formPost['developerid'];
+            $task->priority = $formPost['priority'];
+            $task->estimated = $formPost['estimated'];
+            $task->createdat = $formPost['createdat'];
+            $task->due = $formPost['due'];
+            $task->save();
+            return $this->goHome();
         }
 
         $query = new \yii\db\Query;
         $query->select('id, name, abbreviation')->from('project');
         $command = $query->createCommand();
         $projectList = $command->queryAll();
+        $projectValues = [];
+        foreach($projectList as $project){
+            $projectValues[$project['id']] = $project['name'];
+        }
+        $query->select('id, username')->from('user');
+        $command = $query->createCommand();
+        $userList = $command->queryAll();
+        $usersValue = [];
+        foreach($userList as $user){
+            $usersValue[$user['id']] = $user['username'];
+        }
+
         return $this->render('create-task', [
             'model' => $model,
-            'projects' => $projectList,
+            'projects' => $projectValues,
+            'users' => $usersValue,
             ]);
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 /* @var $this yii\web\View */
+/* @var $hasPermission app\models\Project */
 
 use yii\helpers\Html;
 
@@ -45,7 +46,7 @@ $this->title = 'Project';
                             <td><?= HTML::encode($task->developerid) ?></td>
                             <td><?= HTML::encode($task->createdby) ?></td>
                             <td><?= HTML::encode($task->due) ?></td>
-                            <td><a class="btn btn-lg btn-success" href="<?= $goTo ?><?= HTML::encode($task->id) ?>">Go to</a></td>
+                            <td><?= HTML::a('Go to', ['task', 'id' => $task->id], ['class' => 'btn btn-lg btn-success'])?></td>
                         </tr>
                         <tr>
 
@@ -59,8 +60,6 @@ $this->title = 'Project';
             <?php
         }
         ?>
-
-        <a class="btn btn-lg btn-success" href="#">Add task</a>
-
+        <?= HTML::a('Add task', ['create-task'], ['class' => 'btn btn-lg btn-success']) ?>
     </div>
 </div>

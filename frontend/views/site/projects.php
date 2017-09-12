@@ -38,7 +38,7 @@ $this->title = 'Projects List';
                         <td><?= HTML::encode($project->createdby) ?></td>
                         <td><?= HTML::encode($project->createdat) ?></td>
                         <td><?= HTML::encode($project->finishedat) ?></td>
-                        <td><a class="btn btn-lg btn-success" href="<?= $goTo ?><?= HTML::encode($project->id) ?>">Go to</a></td>
+                        <td><?= HTML::a('Go to', ['project', 'id' => $project->id], ['class' => 'btn btn-lg btn-success']) ?></td>
                     </tr>
                     <?php
                 }

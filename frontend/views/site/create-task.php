@@ -3,10 +3,12 @@
 /* @var $this yii\web\View */
 /* @var $form yii\bootstrap\ActiveForm */
 /* @var $model app\models\CreateTaskForm */
+/* @var $projects app\models\CreateTaskForm */
+/* @var $users app\models\CreateTaskForm */
 
 use yii\helpers\Html;
-//use yii\widgets\ActiveForm;
-use yii\bootstrap\ActiveForm;
+use yii\widgets\ActiveForm;
+use yii\jui\DatePicker;
 
 $this->title = 'Create Form';
 
@@ -20,28 +22,46 @@ $this->title = 'Create Form';
             'id' => 'create-task',
             'options' => ['class' => 'form-horizontal col-lg-4'],
         ]); ?>
-            <?= $form->field($model, 'name') ?>
+            <?= $form->field($model, 'name')->label('Name:') ?>
             <?php
-            $id = [];
-            $value = [];
-            foreach($projects as $project){
-                $value[$project['id']] = $project['name'];
-            }
-            echo $form->field($model,'projectid')->dropDownList([
-                    $value
-            ],
-            ['prompt'=>'Select Project']
-            );
+            echo $form->field($model,'projectid')->dropDownList(
+                $projects,
+                ['prompt'=>'Select Project', 'class' => '']
+            )->label('Project id:');
             ?>
-            <?= $form->field($model, 'description') ?>
-            <?= $form->field($model, 'createdby') ?>
-            <?= $form->field($model, 'developerid') ?>
-            <?= $form->field($model, 'priority') ?>
-            <?= $form->field($model, 'estimated') ?>
-            <?= $form->field($model, 'elapsed') ?>
-            <?= $form->field($model, 'createdat') ?>
-            <?= $form->field($model, 'updatedat') ?>
-            <?= $form->field($model, 'due') ?>
+            <?= $form->field($model, 'description')->label('Description:') ?>
+            <?php
+            echo $form->field($model,'createdby')->dropDownList(
+                $users,
+                ['prompt'=>'Select Project', 'class' => '']
+            )->label('Created by:');
+            echo $form->field($model,'developerid')->dropDownList(
+                $users,
+                ['prompt'=>'Select Project', 'class' => '']
+            )->label('Developer:');
+            ?>
+            <?= $form->field($model, 'priority')->label('Priority:') ?>
+            <?= $form->field($model, 'estimated')->label('Estimation (in minutes):') ?>
+            <div class="form-group field-createtaskform-createdat">
+                <label for="createtaskform-createdat" class="control-label">Created at:</label>
+                <?= yii\jui\DatePicker::widget([
+                        'id' => 'createtaskform-createdat',
+                        'name' => 'CreateTaskForm[createdat]',
+                        'clientOptions' => ['defaultDate' => '2014-01-01'],
+                        'dateFormat' => 'yyyy-MM-dd'
+                    ]) ?>
+                <div class="help-block"></div>
+            </div>
+            <div class="form-group field-createtaskform-due">
+                <label for="createtaskform-due" class="control-label">Due at:</label>
+                <?= yii\jui\DatePicker::widget([
+                    'id' => 'createtaskform-due',
+                    'name' => 'CreateTaskForm[due]',
+                    'clientOptions' => ['defaultDate' => '2014-01-01'],
+                    'dateFormat' => 'yyyy-MM-dd'
+                ]) ?>
+                <div class="help-block"></div>
+            </div>
             <div class="form-group">
                 <div class="col-lg offset-1 col-lg-6">
                     <?= Html::submitButton('Save', ['class' => 'btn btn-primary'])?>
