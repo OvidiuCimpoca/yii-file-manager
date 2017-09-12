@@ -15,7 +15,7 @@ $this->title = 'Task';
     <div class="body-content">
 
         <div class="row breadcrumb">
-            <a href="">Projects</a>
+            <?= HTML::a('Projects', ['projects'])?> /
             <?= HTML::a($projectName, ['project', 'id' => $project])?>
         </div>
 

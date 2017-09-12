@@ -14,6 +14,7 @@ use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
 use app\models\CreateTaskForm;
+use app\models\CreateProjectForm;
 use app\models\Task;
 use app\models\Project;
 
@@ -223,25 +224,14 @@ class SiteController extends Controller
     // This is where I get project information for the project list
     public function actionProjects()
     {
-        $request = Yii::$app->request;
-        $get = $request->get();
         // Replace the if with a check to see if the user has permission
-        if(isset($get['id'])){
+        $query = Project::find();
 
-            $query = Project::find();
-
-            $projects = $query->orderBy('name')->all();
-
-            return $this->render('projects',
-                [
-                    'hasPermission' => 1,
-                    'projects' => $projects
-                ]);
-        }
+        $projects = $query->orderBy('id')->all();
 
         return $this->render('projects',
             [
-                'hasPermission' => 0,
+                'projects' => $projects
             ]);
     }
 
@@ -354,7 +344,11 @@ class SiteController extends Controller
             $task->createdat = $formPost['createdat'];
             $task->due = $formPost['due'];
             $task->save();
-            return $this->goHome();
+            /*
+             * Notes to do
+             * Change link to go to newly created task
+             * */
+            return $this->render('create-task-confirm');
         }
 
         $query = new \yii\db\Query;
@@ -378,5 +372,43 @@ class SiteController extends Controller
             'projects' => $projectValues,
             'users' => $usersValue,
             ]);
+    }
+
+    public function actionCreateProject(){
+
+        $model = new CreateProjectForm();
+
+        if($model->load(Yii::$app->request->post()) && $model->validate()){
+
+            $formPost = Yii::$app->request->post()['CreateProjectForm'];
+            //var_dump($formPost);
+            //die();
+            $project = new Project();
+            $project->name = $formPost['name'];
+            $project->description = $formPost['description'];
+            $project->abbreviation = $formPost['abbreviation'];
+            $project->createdby = $formPost['createdby'];
+            $project->createdat = $formPost['createdat'];
+            $project->save();
+
+            return $this->render('create-project-confirm', [
+                'name' => $formPost['name'],
+            ]);
+
+        }
+
+        $query = new \yii\db\Query;
+        $query->select('id, username')->from('user');
+        $command = $query->createCommand();
+        $userList = $command->queryAll();
+        $usersValue = [];
+        foreach($userList as $user){
+            $usersValue[$user['id']] = $user['username'];
+        }
+
+        return $this->render('create-project', [
+            'model' => $model,
+            'users' => $usersValue,
+        ]);
     }
 }

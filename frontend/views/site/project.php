@@ -16,7 +16,7 @@ $this->title = 'Project';
             ?>
 
             <div class="row breadcrumb">
-                <a href="">Projects</a>
+                <?= HTML::a('Projects', ['projects'])?>
             </div>
 
             <table class="table">

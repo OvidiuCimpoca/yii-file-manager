@@ -6,8 +6,6 @@ use yii\base\Model;
 
 class CreateTaskForm extends Model
 {
-    /*
-     * */
     public $name;
     public $projectid;
     public $description;
