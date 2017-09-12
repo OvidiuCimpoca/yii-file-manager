@@ -3,6 +3,7 @@ namespace frontend\controllers;
 
 use Yii;
 use yii\base\InvalidParamException;
+use yii\db\Query;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
@@ -13,7 +14,7 @@ use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
-use frontend\models\CreateTaskForm;
+use app\models\CreateTaskForm;
 use app\models\Task;
 use app\models\Project;
 
@@ -302,7 +303,6 @@ class SiteController extends Controller
                 [
                     'setTable' => 1,
                     'backToPoject' => $backToPoject,
-                    //'tasks' => $tasks,
                     'id' => $task["id"],
                     'name' => $task["name"],
                     'project' => $task["projectid"],
@@ -345,9 +345,20 @@ class SiteController extends Controller
 
     public function actionCreateTask()
     {
-        $model = new createTaskForm();
-        return $this->render('createTask', [
+        $model = new CreateTaskForm();
+
+        if($model->load(Yii::$app->request->post()) && $model->validate()){
+
+            return $this->render('create-task-confirm', ['model' => $model]);
+        }
+
+        $query = new \yii\db\Query;
+        $query->select('id, name, abbreviation')->from('project');
+        $command = $query->createCommand();
+        $projectList = $command->queryAll();
+        return $this->render('create-task', [
             'model' => $model,
-        ]);
+            'projects' => $projectList,
+            ]);
     }
 }
