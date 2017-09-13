@@ -31,38 +31,37 @@ $this->title = 'Create Form';
                 <?php
                 echo $form->field($model,'projectid')->dropDownList(
                     $projects,
-                    ['prompt'=>'Select Project', 'class' => '']
-                )->label('Project id:');
+                    ['options' => [ $projectId => ['Selected' => 'selected' ]],
+                    'prompt'=>'Select Project', 'class' => '']
+                )->label('Project name:');
                 ?>
-                <?= $form->field($model, 'description')->label('Description:') ?>
+                <?= $form->field($model, 'description')->textarea(['row' => '6'])->label('Description:') ?>
                 <?= $form->field($model, 'createdby')
                     ->hiddenInput(['value' => Yii::$app->user->id])
                     ->label(false); ?>
                 <?php
                 echo $form->field($model,'developerid')->dropDownList(
                     $users,
-                    ['prompt'=>'Select Project', 'class' => '']
+                    ['prompt'=>'Select Developer', 'class' => '']
                 )->label('Developer:');
                 ?>
-                <?= $form->field($model, 'priority')->label('Priority:') ?>
+                <?php
+                echo $form->field($model, 'priority')->dropDownList(
+                        $priorities,
+                        ['prompt' => 'Select Priority', 'class' => '']
+                )->label('Priority:');
+                ?>
                 <?= $form->field($model, 'estimated')->label('Estimation (in minutes):') ?>
-                <div class="form-group field-createtaskform-createdat">
-                    <label for="createtaskform-createdat" class="control-label">Created at:</label>
-                    <?= yii\jui\DatePicker::widget([
-                        'id' => 'createtaskform-createdat',
-                        'name' => 'CreateTaskForm[createdat]',
-                        'clientOptions' => ['defaultDate' => '2014-01-01'],
-                        'value' => date('y-M-d'),
-                        'dateFormat' => 'yyyy-MM-dd'
-                    ]) ?>
-                    <div class="help-block"></div>
-                </div>
+                <?php $date = new \DateTime('now'); ?>
+                <?= $form->field($model, 'createdat')
+                    ->hiddenInput(['value' => $date->format('Y-m-d')])
+                    ->label(false) ?>
                 <div class="form-group field-createtaskform-due">
                     <label for="createtaskform-due" class="control-label">Due at:</label>
                     <?= yii\jui\DatePicker::widget([
                         'id' => 'createtaskform-due',
                         'name' => 'CreateTaskForm[due]',
-                        'clientOptions' => ['defaultDate' => '2014-01-01'],
+                        'clientOptions' => ['defaultDate' => $date->format('Y-m-d')],
                         'dateFormat' => 'yyyy-MM-dd'
                     ]) ?>
                     <div class="help-block"></div>

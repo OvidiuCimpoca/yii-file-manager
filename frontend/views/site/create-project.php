@@ -33,17 +33,12 @@ die();*/
                 <?= $form->field($model, 'createdby')
                     ->hiddenInput(['value' => Yii::$app->user->id])
                     ->label(false); ?>
-                <div class="form-group field-createprojectform-createdat">
-                    <label for="createprojectform-createdat" class="control-label">Created at:</label>
-                    <?= yii\jui\DatePicker::widget([
-                        'id' => 'createprojectform-createdat',
-                        'name' => 'CreateProjectForm[createdat]',
-                        'clientOptions' => ['defaultDate' => '2014-01-01'],
-                        'value' => date('y-M-d'),
-                        'dateFormat' => 'yyyy-MM-dd'
-                    ]) ?>
-                    <div class="help-block"></div>
-                </div>
+                <?php
+                $date = new \DateTime('now');
+                ?>
+                <?= $form->field($model, 'createdat')
+                    ->hiddenInput(['value' => $date->format('Y-m-d')])
+                    ->label(false) ?>
                 <div class="form-group">
                     <div class="col-lg offset-1 col-lg-6">
                         <?= Html::submitButton('Save Project', ['class' => 'btn btn-primary'])?>

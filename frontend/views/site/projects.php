@@ -26,16 +26,16 @@ $this->title = 'Projects List';
             foreach ($projects as $project) {
                 ?>
                 <tr>
-                    <td><?= HTML::encode($project->id) ?></td>
-                    <td><?= HTML::encode($project->name) ?></td>
-                    <td><?= HTML::encode($project->abbreviation) ?></td>
+                    <td><?= HTML::encode($project['id']) ?></td>
+                    <td><?= HTML::encode($project['name']) ?></td>
+                    <td><?= HTML::encode($project['abbreviation']) ?></td>
                     <td>
-                        <?= HTML::encode($project->description) ?>
+                        <?= HTML::encode($project['description']) ?>
                     </td>
-                    <td><?= HTML::encode($project->createdby) ?></td>
-                    <td><?= HTML::encode($project->createdat) ?></td>
-                    <td><?= HTML::encode($project->finishedat) ?></td>
-                    <td><?= HTML::a('Go to', ['project', 'id' => $project->id], ['class' => 'btn btn-lg btn-success']) ?></td>
+                    <td><?= HTML::encode($project['username']) ?></td>
+                    <td><?= HTML::encode($project['createdat']) ?></td>
+                    <td><?= HTML::encode($project['finishedat']) ?></td>
+                    <td><?= HTML::a('Go to', ['project', 'id' => $project['id']], ['class' => 'btn btn-lg btn-success']) ?></td>
                 </tr>
                 <?php
             }

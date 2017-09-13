@@ -5,10 +5,16 @@
 use yii\helpers\Html;
 
 ?>
+<div class="site-index">
 
-<div class="form-group">
-    <div class="col-lg offset-1 col-lg-11">
-        Registered
+    <div class="body-content">
+        <div class="row breadcrumb">
+            <?= HTML::a('Projects', ['projects'])?> /
+        </div>
+        <div class="row">
+            <div class="col-lg offset-1 col-lg-11">
+                Created New Task: <b><?= HTML::encode($name)?></b>
+            </div>
+        </div>
     </div>
 </div>
-

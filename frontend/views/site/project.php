@@ -38,15 +38,15 @@ $this->title = 'Project';
                     foreach ($tasks as $task) {
                         ?>
                         <tr>
-                            <td><?= HTML::encode($task->id) ?></td>
-                            <td><?= HTML::encode($task->name) ?></td>
-                            <td><?= HTML::encode($task->description) ?></td>
-                            <td><?= HTML::encode($task->status) ?></td>
-                            <td><?= HTML::encode($task->priority) ?></td>
-                            <td><?= HTML::encode($task->developerid) ?></td>
-                            <td><?= HTML::encode($task->createdby) ?></td>
-                            <td><?= HTML::encode($task->due) ?></td>
-                            <td><?= HTML::a('Go to', ['task', 'id' => $task->id], ['class' => 'btn btn-lg btn-success'])?></td>
+                            <td><?= HTML::encode($task['id']) ?></td>
+                            <td><?= HTML::encode($task['name']) ?></td>
+                            <td><?= HTML::encode($task['description']) ?></td>
+                            <td><?= HTML::encode($task['tsname']) ?></td>
+                            <td><?= HTML::encode($task['pname']) ?></td>
+                            <td><?= HTML::encode($task['dvname']) ?></td>
+                            <td><?= HTML::encode($task['crname']) ?></td>
+                            <td><?= HTML::encode($task['due']) ?></td>
+                            <td><?= HTML::a('Go to', ['task', 'id' => $task['id']], ['class' => 'btn btn-lg btn-success'])?></td>
                         </tr>
                         <tr>
 
@@ -60,6 +60,6 @@ $this->title = 'Project';
             <?php
         }
         ?>
-        <?= HTML::a('Add task', ['create-task'], ['class' => 'btn btn-lg btn-success']) ?>
+        <?= HTML::a('Add task', ['create-task', 'id' => $projectId], ['class' => 'btn btn-lg btn-success']) ?>
     </div>
 </div>

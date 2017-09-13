@@ -227,7 +227,10 @@ class SiteController extends Controller
         // Replace the if with a check to see if the user has permission
         $query = Project::find();
 
-        $projects = $query->orderBy('id')->all();
+        $query = new \yii\db\Query;
+        $query->select('*, user.username')->from('project')->leftJoin('user', 'user.id = project.createdby');
+        $command = $query->createCommand();
+        $projects = $command->queryAll();
 
         return $this->render('projects',
             [
@@ -243,14 +246,26 @@ class SiteController extends Controller
         // Also check if tasks belong the the user, if he can see them
         if(isset($get['id'])){
 
-            $query = Task::find();
-
-            $tasks = $query->where('projectid = ' . $get['id'])->orderBy('name')->all();
+            $query = new \yii\db\Query;
+            $query->select('task.*,
+                task_status.name as tsname,
+                priority.name as pname,
+                user.username as dvname,
+                user2.username as crname')
+                ->from('task')
+                ->leftJoin('task_status', 'task.status = task_status.id')
+                ->leftJoin('priority', 'task.priority = priority.id')
+                ->leftJoin('user', 'task.developerid = user.id')
+                ->leftJoin('user as user2', 'task.createdby = user2.id')
+                ->where('projectid = '  . $get['id']);
+            $command = $query->createCommand();
+            $resp = $command->queryAll();
 
             return $this->render('project',
                 [
                     'hasPermission' => 1,
-                    'tasks' => $tasks
+                    'projectId' => $get['id'],
+                    'tasks' => $resp,
                 ]);
         }
         return $this->render('project',
@@ -264,6 +279,7 @@ class SiteController extends Controller
     {
         $request = Yii::$app->request;
         $get = $request->get();
+        $ret = ['setTable' => 0];
         if(isset($get['id'])){
 
 
@@ -283,47 +299,29 @@ class SiteController extends Controller
             $statusList = $command->queryAll();
 
             $backToPoject = Url::base(true) . "?r=site/project&id=" . $task["projectid"];
-
-            return $this->render('task',
-                [
-                    'setTable' => 1,
-                    'backToPoject' => $backToPoject,
-                    'id' => $task["id"],
-                    'name' => $task["name"],
-                    'project' => $task["projectid"],
-                    'projectName' => $task["projectname"],
-                    'description' => $task["description"],
-                    'createdby' => $task["createdby"],
-                    'developerid' => $task["developerid"],
-                    'statusList' => $statusList,
-                    'status' => $task["status"],
-                    'priority' => $task["priority"],
-                    'estimated' => $task["estimated"],
-                    'elapsed' => $task["elapsed"],
-                    'createdat' => $task["createdat"],
-                    'updatedat' => $task["updatedat"],
-                    'closedat' => $task["closedat"],
-                    'due' => $task["due"]
-                ]);
+            $ret = [
+                'setTable' => 1,
+                'backToPoject' => $backToPoject,
+                'id' => $task["id"],
+                'name' => $task["name"],
+                'project' => $task["projectid"],
+                'projectName' => $task["projectname"],
+                'description' => $task["description"],
+                'createdby' => $task["createdby"],
+                'developerid' => $task["developerid"],
+                'statusList' => $statusList,
+                'status' => $task["status"],
+                'priority' => $task["priority"],
+                'estimated' => $task["estimated"],
+                'elapsed' => $task["elapsed"],
+                'createdat' => $task["createdat"],
+                'updatedat' => $task["updatedat"],
+                'closedat' => $task["closedat"],
+                'due' => $task["due"]
+            ];
         }
 
-        return $this->render('task',
-            [
-                'setTable' => 0,
-                'id' => '',
-                'name' => '',
-                'project' => '',
-                'description' => '',
-                'developer' => '',
-                'status' => '',
-                'priority' => '',
-                'estimated' => '',
-                'elapsed' => '',
-                'createdat' => '',
-                'updatedat' => '',
-                'closedat' => '',
-                'due' => ''
-            ]);
+        return $this->render('task', $ret);
     }
 
     public function actionCreateTask()
@@ -340,7 +338,10 @@ class SiteController extends Controller
             $task->createdby = $formPost['createdby'];
             $task->developerid = $formPost['developerid'];
             $task->priority = $formPost['priority'];
-            $task->estimated = $formPost['estimated'];
+            $time = Yii::$app->formatter->asTime($formPost['estimated'] * 60, 'php:H:i:s');
+            //var_dump($time);
+            //die();
+            $task->estimated = $time;
             $task->createdat = $formPost['createdat'];
             $task->due = $formPost['due'];
             $task->save();
@@ -348,7 +349,9 @@ class SiteController extends Controller
              * Notes to do
              * Change link to go to newly created task
              * */
-            return $this->render('create-task-confirm');
+            return $this->render('create-task-confirm', [
+                'name' => $formPost['name']
+            ]);
         }
 
         $query = new \yii\db\Query;
@@ -366,12 +369,30 @@ class SiteController extends Controller
         foreach($userList as $user){
             $usersValue[$user['id']] = $user['username'];
         }
-
+        $query->select('*')->from('priority');
+        $command = $query->createCommand();
+        $priorityList = $command->queryAll();
+        $priorities = [];
+        foreach ($priorityList as $priority){
+            $priorities[$priority['id']] = $priority['name'];
+        }
+        $request = Yii::$app->request;
+        $get = $request->get();
+        if(isset($get['id'])){
+            return $this->render('create-task', [
+                'model' => $model,
+                'projects' => $projectValues,
+                'users' => $usersValue,
+                'priorities' => $priorities,
+                'projectId' => $get['id'],
+            ]);
+        }
         return $this->render('create-task', [
             'model' => $model,
             'projects' => $projectValues,
             'users' => $usersValue,
-            ]);
+            'priorities' => $priorities,
+        ]);
     }
 
     public function actionCreateProject(){
@@ -381,8 +402,6 @@ class SiteController extends Controller
         if($model->load(Yii::$app->request->post()) && $model->validate()){
 
             $formPost = Yii::$app->request->post()['CreateProjectForm'];
-            //var_dump($formPost);
-            //die();
             $project = new Project();
             $project->name = $formPost['name'];
             $project->description = $formPost['description'];

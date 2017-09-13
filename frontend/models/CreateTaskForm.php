@@ -20,7 +20,7 @@ class CreateTaskForm extends Model
     {
         return [
             [['name'], 'string', 'min' => 2, 'max' => 100],
-            [['name', 'developerid', 'description'], 'required']
+            [['name', 'projectid', 'developerid', 'description', 'priority'], 'required']
         ];
     }
 }
