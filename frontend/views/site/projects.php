@@ -1,15 +1,15 @@
 <?php
 
 /* @var $this yii\web\View */
+/* @var $projects */
+/* @var $editor */
 
 use yii\helpers\Html;
 
 $this->title = 'Projects List';
 ?>
 <div class="site-index">
-
     <div class="body-content">
-
         <table class="table">
             <thead>
             <th>Id</th>

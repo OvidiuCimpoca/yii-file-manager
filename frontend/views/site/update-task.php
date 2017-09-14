@@ -1,10 +1,12 @@
 <?php
 
 /* @var $this yii\web\View */
-/* @var $projectName app\models\Task */
-/* @var $project app\models\Task */
-/* @var $setTable app\models\Task */
-/* @var $tasknr app\models\Task */
+/* @var $projectName */
+/* @var $project */
+/* @var $setTable */
+/* @var $tasknr */
+/* @var $task */
+/* @var $projects */
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -12,16 +14,14 @@ use yii\widgets\ActiveForm;
 $this->title = 'Update Task';
 ?>
 <div class="site-index">
-
     <div class="body-content">
-
         <div class="row breadcrumb">
             <?= HTML::a('Projects', ['projects'])?> /
+            <?= HTML::a(HTML::encode($projects[$task['projectid']]), ['project', 'id' => $task['projectid']])?> /
+            <?= HTML::a(HTML::encode($task->name), ['task', 'id' => $task['id']])?>
         </div>
-
         <div class="row">
             <div class="col-lg-9">
-
                 <?php
                 $form = ActiveForm::begin([
                     'id' => 'update-task',
@@ -35,9 +35,7 @@ $this->title = 'Update Task';
                     </div>
                 </div>
                 <?php ActiveForm::end(); ?>
-
             </div>
         </div>
-
     </div>
 </div>

@@ -8,6 +8,7 @@ class EditTaskForm extends Model
 {
     public $name;
     public $description;
+    public $projectid;
     public $developerid;
     public $status;
     public $priority;
@@ -19,7 +20,7 @@ class EditTaskForm extends Model
     {
         return [
             [['name'], 'string', 'min' => 2, 'max' => 100],
-            [['name', 'developerid', 'priority', 'status', 'description'], 'required']
+            [['name', 'developerid', 'projectid', 'priority', 'status', 'description'], 'required']
         ];
     }
 }

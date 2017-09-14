@@ -1,24 +1,24 @@
 <?php
 
 /* @var $this yii\web\View */
-/* @var $projectName app\models\Task */
-/* @var $project app\models\Task */
-/* @var $setTable app\models\Task */
-/* @var $tasknr app\models\Task */
+/* @var $projectName */
+/* @var $task */
+/* @var $project */
+/* @var $setTable */
+/* @var $tasknr */
+/* @var $intelligenceMember */
+/* @var $editor */
 
 use yii\helpers\Html;
 
 $this->title = 'Task';
 ?>
 <div class="site-index">
-
     <div class="body-content">
-
         <div class="row breadcrumb">
             <?= HTML::a('Projects', ['projects'])?> /
             <?= HTML::a($task["projectname"], ['project', 'id' => $task["projectid"]])?>
         </div>
-
         <div class="row">
             <div class="col-lg-9">
 
@@ -73,6 +73,5 @@ $this->title = 'Task';
                 </div>
             </div>
         </div>
-
     </div>
 </div>

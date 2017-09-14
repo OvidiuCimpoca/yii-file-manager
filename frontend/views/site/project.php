@@ -2,23 +2,22 @@
 
 /* @var $this yii\web\View */
 /* @var $hasPermission app\models\Project */
+/* @var $taskMaker */
+/* @var $projectId */
+/* @var $editor */
 
 use yii\helpers\Html;
 
 $this->title = 'Project';
 ?>
 <div class="site-index">
-
     <div class="body-content">
-
         <?php
         if(!empty($tasks)) {
             ?>
-
             <div class="row breadcrumb">
                 <?= HTML::a('Projects', ['projects'])?>
             </div>
-
             <table class="table">
                 <thead>
                 <th>nr</th>
@@ -33,7 +32,6 @@ $this->title = 'Project';
                 </thead>
                 <tbody>
                 <?php
-
                 foreach ($tasks as $task) {
                     ?>
                     <tr>
@@ -58,7 +56,6 @@ $this->title = 'Project';
             <?php
         }
         ?>
-
         <?php if($taskMaker){ ?>
             <?= HTML::a('Add task', ['create-task', 'id' => $projectId], ['class' => 'btn btn-lg btn-success']) ?>
         <?php } ?>

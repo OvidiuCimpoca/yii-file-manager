@@ -3,21 +3,21 @@
 /* @var $this yii\web\View */
 /* @var $form yii\bootstrap\ActiveForm */
 /* @var $model app\models\CreateTaskForm */
-/* @var $projects app\models\CreateTaskForm */
-/* @var $users app\models\CreateTaskForm */
+/* @var $projectId */
+/* @var $projects */
+/* @var $users */
+/* @var $priorities */
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
-$this->title = 'Create Form';
-
-
+$this->title = 'Create Task';
 ?>
 <div class="site-index">
-
     <div class="body-content">
         <div class="row breadcrumb">
             <?= HTML::a('Projects', ['projects'])?> /
+            <?= HTML::a(HTML::encode($projects[$projectId]), ['project', 'id' => $projectId])?>
         </div>
         <div class="row">
             <div class="col-lg offset-1 col-lg-12">
@@ -51,13 +51,13 @@ $this->title = 'Create Form';
                         ['prompt' => 'Select Priority', 'class' => '']
                 )->label('Priority:');
                 ?>
-                <?= $form->field($model, 'estimated')->label('Estimation (in minutes):') ?>
+                <?= $form->field($model, 'estimated')->label('Estimation (format hh:mm:ss):') ?>
                 <?php $date = new \DateTime('now'); ?>
                 <?= $form->field($model, 'createdat')
                     ->hiddenInput(['value' => $date->format('Y-m-d')])
                     ->label(false) ?>
                 <div class="form-group field-createtaskform-due">
-                    <label for="createtaskform-due" class="control-label">Due at:</label>
+                    <?= HTML::label('Due at:', 'createtaskform-due', ['class' => 'control-label']) ?>
                     <?= yii\jui\DatePicker::widget([
                         'id' => 'createtaskform-due',
                         'name' => 'CreateTaskForm[due]',
@@ -73,6 +73,5 @@ $this->title = 'Create Form';
                 <?php ActiveForm::end(); ?>
             </div>
         </div>
-
     </div>
 </div>

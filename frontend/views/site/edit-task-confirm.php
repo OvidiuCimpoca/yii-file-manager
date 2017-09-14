@@ -5,11 +5,8 @@
 use yii\helpers\Html;
 
 $this->title = "Edit Task";
-
 ?>
-
 <div class="site-index">
-
     <div class="body-content">
         <div class="row breadcrumb">
             <?= HTML::a('Projects', ['projects'])?> /

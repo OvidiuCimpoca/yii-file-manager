@@ -4,12 +4,9 @@
 
 use yii\helpers\Html;
 
-$this->title = "Project Edit";
-
+$this->title = "Edit Project";
 ?>
-
 <div class="site-index">
-
     <div class="body-content">
         <div class="row breadcrumb">
             <?= HTML::a('Projects', ['projects'])?> /

@@ -7,16 +7,11 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 $this->title ='Create Project';
-
-/*var_dump(Yii::$app->user->id);
-die();*/
 ?>
-
 <div class="site-index">
-
     <div class="body-content">
         <div class="row breadcrumb">
-            <?= HTML::a('Projects', ['projects'])?> /
+            <?= HTML::a('Projects', ['projects'])?>
         </div>
         <div class="row">
             <div class="col-lg offset-1 col-lg-12">

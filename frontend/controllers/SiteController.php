@@ -3,6 +3,7 @@ namespace frontend\controllers;
 
 use Yii;
 use yii\base\InvalidParamException;
+use yii\rbac\Permission;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
@@ -18,6 +19,7 @@ use app\models\CreateProjectForm;
 use app\models\UpdateTaskForm;
 use app\models\EditTaskForm;
 use app\models\EditProjectForm;
+use app\models\EditUserForm;
 use app\models\Task;
 use app\models\Project;
 
@@ -34,7 +36,7 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'signup', 'create-project', 'edit-project', 'create-task', 'edit-task', 'update-task'],
+                'only' => ['logout', 'signup', 'create-project', 'edit-project', 'create-task', 'edit-task', 'update-task', 'list-users', 'edit-user'],
                 'rules' => [
                     [
                         'actions' => ['signup'],
@@ -47,7 +49,7 @@ class SiteController extends Controller
                         'roles' => ['@'],
                     ],
                     [
-                        'actions' => ['create-project', 'edit-project', 'create-task', 'edit-task', 'update-task'],
+                        'actions' => ['create-project', 'edit-project', 'create-task', 'edit-task', 'update-task', 'list-users', 'edit-user'],
                         'allow' => true,
                         'roles' => ['@'],
                         'matchCallback' => function ($rule, $action) {
@@ -63,7 +65,7 @@ class SiteController extends Controller
                         }
                     ],
                     [
-                        'actions' => ['update-task'],
+                        'actions' => ['create-task', 'update-task'],
                         'allow' => true,
                         'roles' => ['@'],
                         'matchCallback' => function ($rule, $action) {
@@ -392,7 +394,7 @@ class SiteController extends Controller
             $task->createdby = $formPost['createdby'];
             $task->developerid = $formPost['developerid'];
             $task->priority = $formPost['priority'];
-            $time = Yii::$app->formatter->asTime($formPost['estimated'] * 60, 'php:H:i:s');
+            $time = Yii::$app->formatter->asTime($formPost['estimated'], 'php:H:i:s');
             $task->estimated = $time;
             $task->createdat = $formPost['createdat'];
             $task->due = $formPost['due'];
@@ -441,9 +443,11 @@ class SiteController extends Controller
         }
 
         $task = Task::findOne($get['id']);
+        $projects = getQueryList('project', 'id, name', 'id', 'name');
         return $this->render('update-task', [
             'model' => $model,
             'task' => $task,
+            'projects' => $projects,
         ]);
     }
 
@@ -473,6 +477,7 @@ class SiteController extends Controller
         $task = Task::findOne($get['id']);
 
         $users = getQueryList('user', 'id, username', 'id', 'username');
+        $projects = getQueryList('project', 'id, name', 'id', 'name');
         $status = getQueryList('task_status', '*', 'id', 'name');
         $priorities = getQueryList('priority', '*', 'id', 'name');
 
@@ -482,6 +487,7 @@ class SiteController extends Controller
             'listStatus' => $status,
             'priorities' => $priorities,
             'users' => $users,
+            'projects' => $projects,
         ]);
     }
 
@@ -536,6 +542,50 @@ class SiteController extends Controller
         return $this->render('edit-project', [
             'model' => $model,
             'project' => $project,
+        ]);
+    }
+
+    public function actionListUsers(){
+        $query = new \yii\db\Query;
+        $query->select('user.*, permission.name as per_name')
+            ->from('user')
+            ->leftJoin('permission', 'user.permission = permission.id');
+        $command = $query->createCommand();
+        $users = $command->queryAll();
+        return $this->render('list-users', [
+            'users' => $users,
+        ]);
+    }
+
+    public function actionEditUser(){
+        $model = new EditUserForm();
+        $request = Yii::$app->request;
+        $get = $request->get();
+        $user = User::findOne($get['id']);
+        $permissions = getQueryList('permission', '*', 'id', 'name');
+
+        if($model->load(Yii::$app->request->post()) && $model->validate()){
+            $formPost = Yii::$app->request->post()['EditUserForm'];
+            $user = User::findOne($get['id']);
+            $user->username = $formPost['username'];
+            $user->email = $formPost['email'];
+            $user->permission = $formPost['permission'];
+            $user->update();
+            $query = new \yii\db\Query;
+            $query->select('user.*, permission.name as per_name')
+                ->from('user')
+                ->leftJoin('permission', 'user.permission = permission.id');
+            $command = $query->createCommand();
+            $users = $command->queryAll();
+            return $this->render('list-users', [
+                'users' => $users,
+            ]);
+        }
+
+        return $this->render('edit-user', [
+            'model' => $model,
+            'user' => $user,
+            'permissions' => $permissions,
         ]);
     }
 }
