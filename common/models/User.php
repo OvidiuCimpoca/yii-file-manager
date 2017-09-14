@@ -26,6 +26,12 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
 
+    const PERMISSION_ADMIN = 10;
+    const PERMISSION_PM = 20;
+    const PERMISSION_DEV = 30;
+    const PERMISSION_OBS = 40;
+    const PERMISSION_BIM = 50;
+
 
     /**
      * @inheritdoc
@@ -53,6 +59,8 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
+            ['permission', 'default', 'value' => self::PERMISSION_OBS],
+            ['permission', 'in', 'range' => [self::PERMISSION_ADMIN, self::PERMISSION_PM, self::PERMISSION_DEV, self::PERMISSION_OBS, self::PERMISSION_BIM]],
         ];
     }
 
@@ -185,5 +193,33 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    public static function isUserAdmin($username){
+        if(static::findOne(['username' => $username, 'permission' => self::PERMISSION_ADMIN])){
+            return true;
+        }
+        return false;
+    }
+
+    public static function isUserPM($username){
+        if(static::findOne(['username' => $username, 'permission' => self::PERMISSION_PM])){
+            return true;
+        }
+        return false;
+    }
+
+    public static function isUserDev($username){
+        if(static::findOne(['username' => $username, 'permission' => self::PERMISSION_DEV])){
+            return true;
+        }
+        return false;
+    }
+
+    public static function isUserBim($username){
+        if(static::findOne(['username' => $username, 'permission' => self::PERMISSION_BIM])){
+            return true;
+        }
+        return false;
     }
 }
