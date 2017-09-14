@@ -80,7 +80,12 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+
+        $userStatus = 0;
+        if(!Yii::$app->user->isGuest){
+            $userStatus = Yii::$app->user->identity->permission;
+        }
+        return $this->render('index', ['userStatus' => $userStatus]);
     }
 
     /**
@@ -227,7 +232,15 @@ class SiteController extends Controller
     // This is where I get project information for the project list
     public function actionProjects()
     {
-        // Replace the if with a check to see if the user has permission
+        $userStatus = 0;
+        if(!Yii::$app->user->isGuest){
+            $userStatus = Yii::$app->user->identity->permission;
+        }
+        $editor = 0;
+        if($userStatus == 10 || $userStatus == 20){
+            $editor = 1;
+        }
+
         $query = new \yii\db\Query;
         $query->select('project.*, user.username')->from('project')->leftJoin('user', 'project.createdby = user.id');
         $command = $query->createCommand();
@@ -235,19 +248,43 @@ class SiteController extends Controller
 
         return $this->render('projects',
             [
-                'projects' => $projects
+                'projects' => $projects,
+                'editor' => $editor,
             ]);
     }
 
     // This is where I get task information for the task list
     public function actionProject()
     {
+        $userStatus = 0;
+        if(!Yii::$app->user->isGuest){
+            $userStatus = Yii::$app->user->identity->permission;
+        }
+        $editor = 0;
+        $taskMaker = 0;
+        if($userStatus == 10 || $userStatus == 20){
+            $editor = 1;
+        }
+        if($userStatus == 10 || $userStatus == 20 || $userStatus == 50){
+            $taskMaker = 1;
+        }
         $request = Yii::$app->request;
         $get = $request->get();
-        // Also check if tasks belong the the user, if he can see them
-        if(isset($get['id'])){
-
-            $query = new \yii\db\Query;
+        $query = new \yii\db\Query;
+        if($userStatus == 30){
+            $query->select('task.*,
+                task_status.name as tsname,
+                priority.name as pname,
+                user.username as dvname,
+                user2.username as crname')
+                ->from('task')
+                ->leftJoin('task_status', 'task.status = task_status.id')
+                ->leftJoin('priority', 'task.priority = priority.id')
+                ->leftJoin('user', 'task.developerid = user.id')
+                ->leftJoin('user as user2', 'task.createdby = user2.id')
+                ->where('projectid = '  . $get['id'])
+                ->andWhere('user.id = ' . Yii::$app->user->identity->id);
+        }else{
             $query->select('task.*,
                 task_status.name as tsname,
                 priority.name as pname,
@@ -259,31 +296,37 @@ class SiteController extends Controller
                 ->leftJoin('user', 'task.developerid = user.id')
                 ->leftJoin('user as user2', 'task.createdby = user2.id')
                 ->where('projectid = '  . $get['id']);
-            $command = $query->createCommand();
-            $resp = $command->queryAll();
-
-            return $this->render('project',
-                [
-                    'hasPermission' => 1,
-                    'projectId' => $get['id'],
-                    'tasks' => $resp,
-                ]);
         }
+        $command = $query->createCommand();
+        $resp = $command->queryAll();
+
         return $this->render('project',
             [
-                'hasPermission' => 0
+                'projectId' => $get['id'],
+                'tasks' => $resp,
+                'editor' => $editor,
+                'taskMaker' => $taskMaker,
             ]);
     }
 
     // This is where I get task information for the task page
     public function actionTask()
     {
+        $userStatus = 0;
+        if(!Yii::$app->user->isGuest){
+            $userStatus = Yii::$app->user->identity->permission;
+        }
         $request = Yii::$app->request;
         $get = $request->get();
-        $ret = ['setTable' => 0];
         if(isset($get['id'])){
-
-
+            $editor = 0;
+            if($userStatus == 10 || $userStatus == 20){
+                $editor = 1;
+            }
+            $intelligenceMember = 0;
+            if($userStatus == 50){
+                $intelligenceMember = 1;
+            }
             $query = new \yii\db\Query;
             $query->select('task.*,
                 project.name as projectname,
@@ -301,30 +344,14 @@ class SiteController extends Controller
             $command = $query->createCommand();
             $resp = $command->queryAll();
             $task =  $resp[0];
-
-            $backToPoject = Url::base(true) . "?r=site/project&id=" . $task["projectid"];
-            $ret = [
-                'setTable' => 1,
-                'backToPoject' => $backToPoject,
-                'id' => $task["id"],
-                'name' => $task["name"],
-                'project' => $task["projectid"],
-                'projectName' => $task["projectname"],
-                'description' => $task["description"],
-                'createdby' => $task["created_task"],
-                'assigned_to' => $task["assigned_to"],
-                'status' => $task["task_status_name"],
-                'priority' => $task["pr_name"],
-                'estimated' => $task["estimated"],
-                'elapsed' => $task["elapsed"],
-                'createdat' => $task["createdat"],
-                'updatedat' => $task["updatedat"],
-                'closedat' => $task["closedat"],
-                'due' => $task["due"]
-            ];
+            return $this->render('task', [
+                'task' => $task,
+                'editor' => $editor,
+                'intelligenceMember' => $intelligenceMember,
+            ]);
         }
 
-        return $this->render('task', $ret);
+        return $this->render('index');
     }
 
     public function actionCreateTask()

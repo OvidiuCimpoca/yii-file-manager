@@ -16,69 +16,62 @@ $this->title = 'Task';
 
         <div class="row breadcrumb">
             <?= HTML::a('Projects', ['projects'])?> /
-            <?= HTML::a($projectName, ['project', 'id' => $project])?>
+            <?= HTML::a($task["projectname"], ['project', 'id' => $task["projectid"]])?>
         </div>
 
         <div class="row">
-            <?php
-            if($setTable == 1){
-                ?>
-                <div class="col-lg-9">
+            <div class="col-lg-9">
 
-                    <div class="panel panel-default">
-                        <div class="panel-heading"><?= HTML::encode($name) ?></div>
-                        <div class="panel-body">
-                            <?= HTML::encode($description) ?>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="col-lg-3">
-                    <div class="panel panel-default">
-                        <div class="row panel-body">
-                            <div class="col-lg-12">
-                                <span>Created by: </span> <?= HTML::encode($createdby) ?>
-                            </div>
-                            <div class="col-lg-12">
-                                <span>Assigned to: </span> <?= HTML::encode($assigned_to) ?>
-                            </div>
-                            <div class="col-lg-12">
-                                <span>Status: <?= HTML::encode($status) ?></span>
-                            </div>
-                            <div class="col-lg-12">
-                                <span>Priority: <?= HTML::encode($priority) ?></span>
-                            </div>
-                            <div class="col-lg-12">
-                                <span>Estimated time: </span> <?= HTML::encode($estimated) ?>
-                            </div>
-                            <div class="col-lg-12">
-                                <span>Time elapsed: </span> <?= HTML::encode($elapsed) ?>
-                            </div>
-                            <div class="col-lg-12">
-                                <span>Created at: </span> <?= HTML::encode($createdat) ?>
-                            </div>
-                            <div class="col-lg-12">
-                                <span>Closed at: </span> <?= HTML::encode($closedat) ?>
-                            </div>
-                            <div class="col-lg-12">
-                                <span>Due date: </span> <?= HTML::encode($due) ?>
-                            </div>
-                            <div class="col-lg-12">
-                                <?= HTML::a('Update Task', ['update-task', 'id' => $id], ['class' => 'btn btn-success']) ?>
-                                <?= HTML::a('Edit Task', ['edit-task', 'id' => $id], ['class' => 'btn btn-success']) ?>
-                            </div>
-                        </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading"><?= HTML::encode($task["name"]) ?></div>
+                    <div class="panel-body">
+                        <?= HTML::encode($task["description"]) ?>
                     </div>
                 </div>
-                <?php
-            } else{
-                ?>
-                <div class="col-lg-12">
-                    <h2>No Task was found!</h2>
+            </div>
+            <div class="col-lg-3">
+                <div class="panel panel-default">
+                    <div class="row panel-body">
+                        <div class="col-lg-12">
+                            <span>Created by: </span> <?= HTML::encode($task['created_task']) ?>
+                        </div>
+                        <div class="col-lg-12">
+                            <span>Assigned to: </span> <?= HTML::encode($task['assigned_to']) ?>
+                        </div>
+                        <div class="col-lg-12">
+                            <span>Status: <?= HTML::encode($task['task_status_name']) ?></span>
+                        </div>
+                        <div class="col-lg-12">
+                            <span>Priority: <?= HTML::encode($task['pr_name']) ?></span>
+                        </div>
+                        <div class="col-lg-12">
+                            <span>Estimated time: </span> <?= HTML::encode($task['estimated']) ?>
+                        </div>
+                        <div class="col-lg-12">
+                            <span>Time elapsed: </span> <?= HTML::encode($task['elapsed']) ?>
+                        </div>
+                        <div class="col-lg-12">
+                            <span>Created at: </span> <?= HTML::encode($task['createdat']) ?>
+                        </div>
+                        <div class="col-lg-12">
+                            <span>Closed at: </span> <?= HTML::encode($task['closedat']) ?>
+                        </div>
+                        <div class="col-lg-12">
+                            <span>Due date: </span> <?= HTML::encode($task['due']) ?>
+                        </div>
+                        <div class="col-lg-12">
+                            <?php if($intelligenceMember){ ?>
+                                <?= HTML::a('Update Task', ['update-task', 'id' => $task['id']], ['class' => 'btn btn-success']) ?>
+                            <?php
+                            }
+                            if($editor) {
+                            ?>
+                                <?= HTML::a('Edit Task', ['edit-task', 'id' => $task['id']], ['class' => 'btn btn-success']) ?>
+                            <?php } ?>
+                        </div>
+                    </div>
                 </div>
-                <?php
-            }
-            ?>
+            </div>
         </div>
 
     </div>

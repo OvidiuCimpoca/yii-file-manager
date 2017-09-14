@@ -42,6 +42,8 @@ $this->title = 'Projects List';
             ?>
             </tbody>
         </table>
-        <?= HTML::a('New Project', ['create-project'], ['class' => 'btn btn-lg btn-success'])?>
+        <?php if($editor){ ?>
+            <?= HTML::a('New Project', ['create-project'], ['class' => 'btn btn-lg btn-success'])?>
+        <?php } ?>
     </div>
 </div>
