@@ -61,7 +61,6 @@ $this->title = 'Create Form';
                     <?= yii\jui\DatePicker::widget([
                         'id' => 'createtaskform-due',
                         'name' => 'CreateTaskForm[due]',
-                        'clientOptions' => ['defaultDate' => $date->format('Y-m-d')],
                         'dateFormat' => 'yyyy-MM-dd'
                     ]) ?>
                     <div class="help-block"></div>

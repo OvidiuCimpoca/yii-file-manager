@@ -15,6 +15,9 @@ use frontend\models\SignupForm;
 use frontend\models\ContactForm;
 use app\models\CreateTaskForm;
 use app\models\CreateProjectForm;
+use app\models\UpdateTaskForm;
+use app\models\EditTaskForm;
+use app\models\EditProjectForm;
 use app\models\Task;
 use app\models\Project;
 
@@ -225,10 +228,8 @@ class SiteController extends Controller
     public function actionProjects()
     {
         // Replace the if with a check to see if the user has permission
-        $query = Project::find();
-
         $query = new \yii\db\Query;
-        $query->select('*, user.username')->from('project')->leftJoin('user', 'user.id = project.createdby');
+        $query->select('project.*, user.username')->from('project')->leftJoin('user', 'project.createdby = user.id');
         $command = $query->createCommand();
         $projects = $command->queryAll();
 
@@ -284,19 +285,22 @@ class SiteController extends Controller
 
 
             $query = new \yii\db\Query;
-            $query->select('task.*, project.name as projectname')
+            $query->select('task.*,
+                project.name as projectname,
+                task_status.name as task_status_name,
+                priority.name as pr_name,
+                user.username as created_task,
+                user2.username as assigned_to')
                 ->from('task')
                 ->leftJoin('project', 'task.projectid=project.id')
+                ->leftJoin('task_status', 'task.status = task_status.id')
+                ->leftJoin('priority','task.priority = priority.id')
+                ->leftJoin('user', 'task.createdby = user.id')
+                ->leftJoin('user as user2', 'task.developerid = user2.id')
                 ->where('task.id = ' . $get['id']);
             $command = $query->createCommand();
             $resp = $command->queryAll();
             $task =  $resp[0];
-
-            $query2 = new \yii\db\Query;
-            $query2->select('*')
-                ->from('task_status');
-            $command = $query2->createCommand();
-            $statusList = $command->queryAll();
 
             $backToPoject = Url::base(true) . "?r=site/project&id=" . $task["projectid"];
             $ret = [
@@ -307,11 +311,10 @@ class SiteController extends Controller
                 'project' => $task["projectid"],
                 'projectName' => $task["projectname"],
                 'description' => $task["description"],
-                'createdby' => $task["createdby"],
-                'developerid' => $task["developerid"],
-                'statusList' => $statusList,
-                'status' => $task["status"],
-                'priority' => $task["priority"],
+                'createdby' => $task["created_task"],
+                'assigned_to' => $task["assigned_to"],
+                'status' => $task["task_status_name"],
+                'priority' => $task["pr_name"],
                 'estimated' => $task["estimated"],
                 'elapsed' => $task["elapsed"],
                 'createdat' => $task["createdat"],
@@ -339,59 +342,95 @@ class SiteController extends Controller
             $task->developerid = $formPost['developerid'];
             $task->priority = $formPost['priority'];
             $time = Yii::$app->formatter->asTime($formPost['estimated'] * 60, 'php:H:i:s');
-            //var_dump($time);
-            //die();
             $task->estimated = $time;
             $task->createdat = $formPost['createdat'];
             $task->due = $formPost['due'];
             $task->save();
-            /*
-             * Notes to do
-             * Change link to go to newly created task
-             * */
             return $this->render('create-task-confirm', [
                 'name' => $formPost['name']
             ]);
         }
 
-        $query = new \yii\db\Query;
-        $query->select('id, name, abbreviation')->from('project');
-        $command = $query->createCommand();
-        $projectList = $command->queryAll();
-        $projectValues = [];
-        foreach($projectList as $project){
-            $projectValues[$project['id']] = $project['name'];
-        }
-        $query->select('id, username')->from('user');
-        $command = $query->createCommand();
-        $userList = $command->queryAll();
-        $usersValue = [];
-        foreach($userList as $user){
-            $usersValue[$user['id']] = $user['username'];
-        }
-        $query->select('*')->from('priority');
-        $command = $query->createCommand();
-        $priorityList = $command->queryAll();
-        $priorities = [];
-        foreach ($priorityList as $priority){
-            $priorities[$priority['id']] = $priority['name'];
-        }
+        $projects = getQueryList('project', 'id, name', 'id', 'name');
+        $users = getQueryList('user', 'id, username', 'id', 'username');
+        $priorities = getQueryList('priority', '*', 'id', 'name');
         $request = Yii::$app->request;
         $get = $request->get();
         if(isset($get['id'])){
             return $this->render('create-task', [
                 'model' => $model,
-                'projects' => $projectValues,
-                'users' => $usersValue,
+                'projects' => $projects,
+                'users' => $users,
                 'priorities' => $priorities,
                 'projectId' => $get['id'],
             ]);
         }
         return $this->render('create-task', [
             'model' => $model,
-            'projects' => $projectValues,
-            'users' => $usersValue,
+            'projects' => $projects,
+            'users' => $users,
             'priorities' => $priorities,
+        ]);
+    }
+
+    public function actionUpdateTask(){
+        $model = new UpdateTaskForm();
+        $request = Yii::$app->request;
+        $get = $request->get();
+
+        if($model->load(Yii::$app->request->post())  && $model->validate()){
+            $formPost = Yii::$app->request->post()['UpdateTaskForm'];
+            $task = Task::findOne($get['id']);
+            $task->name = $formPost['name'];
+            $task->description = $formPost['description'];
+            $task->update();
+            return $this->render('update-task-confirm', [
+                'name' => $formPost['name'],
+            ]);
+        }
+
+        $task = Task::findOne($get['id']);
+        return $this->render('update-task', [
+            'model' => $model,
+            'task' => $task,
+        ]);
+    }
+
+    public function actionEditTask(){
+        $model = new EditTaskForm();
+        $request = Yii::$app->request;
+        $get = $request->get();
+
+        if($model->load(Yii::$app->request->post())  && $model->validate()){
+            $formPost = Yii::$app->request->post()['EditTaskForm'];
+            $task = Task::findOne($get['id']);
+            $task->name = $formPost['name'];
+            $task->description = $formPost['description'];
+            $task->developerid = $formPost['developerid'];
+            $task->status = $formPost['status'];
+            $task->priority = $formPost['priority'];
+            $task->estimated = $formPost['estimated'];
+            $task->elapsed = $formPost['elapsed'];
+            $task->due = $formPost['due'];
+            $task->update();
+
+            return $this->render('edit-task-confirm', [
+                'name' => $formPost['name'],
+            ]);
+        }
+
+        $task = Task::findOne($get['id']);
+
+        $users = getQueryList('user', 'id, username', 'id', 'username');
+        $status = getQueryList('task_status', '*', 'id', 'name');
+        $priorities = getQueryList('priority', '*', 'id', 'name');
+
+        return $this->render('edit-task',[
+            'model' => $model,
+            'task' => $task,
+            'listStatus' => $status,
+            'priorities' => $priorities,
+            'users' => $users,
         ]);
     }
 
@@ -416,18 +455,48 @@ class SiteController extends Controller
 
         }
 
-        $query = new \yii\db\Query;
-        $query->select('id, username')->from('user');
-        $command = $query->createCommand();
-        $userList = $command->queryAll();
-        $usersValue = [];
-        foreach($userList as $user){
-            $usersValue[$user['id']] = $user['username'];
-        }
+        $users = getQueryList('user', 'id, username', 'id', 'username');
 
         return $this->render('create-project', [
             'model' => $model,
-            'users' => $usersValue,
+            'users' => $users,
         ]);
     }
+
+    public function actionEditProject(){
+        $model = new EditProjectForm();
+        $request = Yii::$app->request;
+        $get = $request->get();
+        $project = Project::findOne($get['id']);
+
+        if($model->load(Yii::$app->request->post()) && $model->validate()){
+            $formPost = Yii::$app->request->post()['EditProjectForm'];
+            $project->name = $formPost['name'];
+            $project->description = $formPost['description'];
+            $project->abbreviation = $formPost['abbreviation'];
+            $project->update();
+
+            return $this->render('edit-project-confirm', [
+                'model' => $model,
+                'name' => $formPost['name'],
+            ]);
+        }
+
+        return $this->render('edit-project', [
+            'model' => $model,
+            'project' => $project,
+        ]);
+    }
+}
+
+function getQueryList($tableName, $select, $index, $value){
+    $query = new \yii\db\Query;
+    $query->select($select)->from($tableName);
+    $command = $query->createCommand();
+    $itemList = $command->queryAll();
+    $items = [];
+    foreach ($itemList as $item){
+        $items[$item[$index]] = $item[$value];
+    }
+    return $items;
 }

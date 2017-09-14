@@ -26,10 +26,9 @@ $this->title = 'Task';
                 <div class="col-lg-9">
 
                     <div class="panel panel-default">
-                        <div class="panel-heading"><?= HTML::encode($projectName) .'-' . HTML::encode($id) ?></div>
+                        <div class="panel-heading"><?= HTML::encode($name) ?></div>
                         <div class="panel-body">
-                            <input type="text" value="<?= HTML::encode($name) ?>" />
-                            <textarea class="form-control" rows="3"><?= HTML::encode($description) ?></textarea>
+                            <?= HTML::encode($description) ?>
                         </div>
                     </div>
 
@@ -41,37 +40,32 @@ $this->title = 'Task';
                                 <span>Created by: </span> <?= HTML::encode($createdby) ?>
                             </div>
                             <div class="col-lg-12">
-                                <span>Assigned to: </span> <?= HTML::encode($developerid) ?> <a href="#">edit</a>
+                                <span>Assigned to: </span> <?= HTML::encode($assigned_to) ?>
                             </div>
                             <div class="col-lg-12">
-                                <span>Status: </span>
-                                <select name="" id="">
-                                    <?php
-                                    foreach($statusList as $stat){
-                                        ?>
-                                        <option value="<?= $stat["id"]?>" <?= ($stat["id"] == $status)? 'selected': '' ?> ><?= $stat["name"]?></option>
-                                        <?php
-                                    }
-                                    ?>
-                                </select>
+                                <span>Status: <?= HTML::encode($status) ?></span>
                             </div>
                             <div class="col-lg-12">
-                                <span>estimated time: </span> <?= HTML::encode($estimated) ?> <a href="#">edit</a>
+                                <span>Priority: <?= HTML::encode($priority) ?></span>
                             </div>
                             <div class="col-lg-12">
-                                <span>time elapsed: </span> <?= HTML::encode($elapsed) ?> <a href="#">edit</a>
+                                <span>Estimated time: </span> <?= HTML::encode($estimated) ?>
                             </div>
                             <div class="col-lg-12">
-                                <span>created at: </span> <?= HTML::encode($createdat) ?>
+                                <span>Time elapsed: </span> <?= HTML::encode($elapsed) ?>
                             </div>
                             <div class="col-lg-12">
-                                <span>closed at: </span> <?= HTML::encode($closedat) ?>
+                                <span>Created at: </span> <?= HTML::encode($createdat) ?>
                             </div>
                             <div class="col-lg-12">
-                                <span>Due date: </span> <?= HTML::encode($due) ?> <a href="#">edit</a>
+                                <span>Closed at: </span> <?= HTML::encode($closedat) ?>
                             </div>
                             <div class="col-lg-12">
-                                <a href="#" class="btn btn-success">Save Changes</a>
+                                <span>Due date: </span> <?= HTML::encode($due) ?>
+                            </div>
+                            <div class="col-lg-12">
+                                <?= HTML::a('Update Task', ['update-task', 'id' => $id], ['class' => 'btn btn-success']) ?>
+                                <?= HTML::a('Edit Task', ['edit-task', 'id' => $id], ['class' => 'btn btn-success']) ?>
                             </div>
                         </div>
                     </div>

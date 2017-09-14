@@ -61,5 +61,6 @@ $this->title = 'Project';
         }
         ?>
         <?= HTML::a('Add task', ['create-task', 'id' => $projectId], ['class' => 'btn btn-lg btn-success']) ?>
+        <?= HTML::a('Edit project', ['edit-project', 'id' => $projectId], ['class' => 'btn btn-lg btn-success']) ?>
     </div>
 </div>
