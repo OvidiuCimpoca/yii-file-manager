@@ -27,7 +27,7 @@ $this->title = 'Update Task';
                     'id' => 'update-task',
                 ]);
                 ?>
-                <?= $form->field($model, 'name')->textInput(['value' => HTML::encode($task['name'])])->label('Task name:') ?>
+                <?= $form->field($model, 'name')->textInput(['value' => HTML::encode($task['name']), 'autofocus' => true])->label('Task name:') ?>
                 <?= $form->field($model, 'description')->textarea(['row' => '6', 'value' => HTML::encode($task['description']) ])->label('Description') ?>
                 <div class="form-group">
                     <div class="col-lg offset-1 col-lg-6">

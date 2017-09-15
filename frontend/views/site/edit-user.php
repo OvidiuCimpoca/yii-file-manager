@@ -19,7 +19,7 @@ $this->title = 'List Users';
                     'id' => 'edit-user',
                 ]);
                 ?>
-                <?= $form->field($model, 'username')->textInput(['value' => HTML::encode($user['username']) ])->label('Username:') ?>
+                <?= $form->field($model, 'username')->textInput(['value' => HTML::encode($user['username']), 'autofocus' => true])->label('Username:') ?>
                 <?= $form->field($model, 'email')->textInput(['value' => HTML::encode($user['email']) ])->label('Email') ?>
                 <?= $form->field($model, 'permission')->dropDownList(
                     $permissions,

@@ -31,7 +31,7 @@ $this->title = 'Edit Task';
                     'id' => 'edit-task',
                 ]);
                 ?>
-                <?= $form->field($model, 'name')->textInput(['value' => HTML::encode($task->name)])->label('Task name:') ?>
+                <?= $form->field($model, 'name')->textInput(['value' => HTML::encode($task->name), 'autofocus' => true])->label('Task name:') ?>
                 <?= $form->field($model, 'description')->textarea(['row' => '6', 'value' => HTML::encode($task['description']) ])->label('Description') ?>
                 <?= $form->field($model, 'developerid')->dropDownList(
                     $users,

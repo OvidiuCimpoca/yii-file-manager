@@ -27,7 +27,7 @@ $this->title = 'Create Task';
                     'options' => ['class' => 'form-horizontal col-lg-4'],
                 ]);
                 ?>
-                <?= $form->field($model, 'name')->label('Name:') ?>
+                <?= $form->field($model, 'name')->textInput(['autofocus' => true])->label('Name:') ?>
                 <?php
                 echo $form->field($model,'projectid')->dropDownList(
                     $projects,

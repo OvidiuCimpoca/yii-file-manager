@@ -21,7 +21,7 @@ $this->title ='Create Project';
                     'options' => ['class' => 'form-horizontal col-lg-4'],
                 ]);
                 ?>
-                <?= $form->field($model, 'name')->label('Name:') ?>
+                <?= $form->field($model, 'name')->textInput(['autofocus' => true])->label('Name:') ?>
                 <?= $form->field($model, 'description')->textarea(['row' => '6'])->label('Description:') ?>
                 <?= $form->field($model, 'abbreviation')->label('Abbreviation:') ?>
 

@@ -271,6 +271,16 @@ class SiteController extends Controller
         $command = $query->createCommand();
         $projects = $command->queryAll();
 
+        $request = Yii::$app->request;
+        $get = $request->get();
+        if(isset($get['page'])){
+            return $this->render('projects',
+                [
+                    'projects' => $projects,
+                    'editor' => $editor,
+                    'page' => $get['page'],
+                ]);
+        }
         return $this->render('projects',
             [
                 'projects' => $projects,
@@ -308,7 +318,8 @@ class SiteController extends Controller
                 ->leftJoin('user', 'task.developerid = user.id')
                 ->leftJoin('user as user2', 'task.createdby = user2.id')
                 ->where('projectid = '  . $get['id'])
-                ->andWhere('user.id = ' . Yii::$app->user->identity->id);
+                ->andWhere('user.id = ' . Yii::$app->user->identity->id)
+                ->orderBy('task.id');
         }else{
             $query->select('task.*,
                 task_status.name as tsname,
@@ -320,11 +331,22 @@ class SiteController extends Controller
                 ->leftJoin('priority', 'task.priority = priority.id')
                 ->leftJoin('user', 'task.developerid = user.id')
                 ->leftJoin('user as user2', 'task.createdby = user2.id')
-                ->where('projectid = '  . $get['id']);
+                ->where('projectid = '  . $get['id'])
+                ->orderBy('task.id');
         }
         $command = $query->createCommand();
         $resp = $command->queryAll();
 
+        if(isset($get['page'])){
+            return $this->render('project',
+                [
+                    'projectId' => $get['id'],
+                    'page' => $get['page'],
+                    'tasks' => $resp,
+                    'editor' => $editor,
+                    'taskMaker' => $taskMaker,
+                ]);
+        }
         return $this->render('project',
             [
                 'projectId' => $get['id'],
@@ -404,7 +426,8 @@ class SiteController extends Controller
         }
 
         $projects = getQueryList('project', 'id, name', 'id', 'name');
-        $users = getQueryList('user', 'id, username', 'id', 'username');
+        $users = getQueryListWhere('user', 'id, username',
+            'id', 'username', 'permission = ' . User::PERMISSION_DEV . ' OR permission = ' . User::PERMISSION_PM);
         $priorities = getQueryList('priority', '*', 'id', 'name');
         $request = Yii::$app->request;
         $get = $request->get();
@@ -475,7 +498,8 @@ class SiteController extends Controller
 
         $task = Task::findOne($get['id']);
 
-        $users = getQueryList('user', 'id, username', 'id', 'username');
+        $users = getQueryListWhere('user', 'id, username',
+            'id', 'username', 'permission = ' . User::PERMISSION_DEV . ' OR permission = ' . User::PERMISSION_PM);
         $projects = getQueryList('project', 'id, name', 'id', 'name');
         $status = getQueryList('task_status', '*', 'id', 'name');
         $priorities = getQueryList('priority', '*', 'id', 'name');
@@ -608,6 +632,18 @@ class SiteController extends Controller
 function getQueryList($tableName, $select, $index, $value){
     $query = new \yii\db\Query;
     $query->select($select)->from($tableName);
+    $command = $query->createCommand();
+    $itemList = $command->queryAll();
+    $items = [];
+    foreach ($itemList as $item){
+        $items[$item[$index]] = $item[$value];
+    }
+    return $items;
+}
+
+function getQueryListWhere($tableName, $select, $index, $value, $condition){
+    $query = new \yii\db\Query;
+    $query->select($select)->from($tableName)->where($condition);
     $command = $query->createCommand();
     $itemList = $command->queryAll();
     $items = [];

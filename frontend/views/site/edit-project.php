@@ -23,7 +23,7 @@ $this->title ='Edit Project';
                     'options' => ['class' => 'form-horizontal col-lg-4'],
                 ]);
                 ?>
-                <?= $form->field($model, 'name')->textInput(['value' => HTML::encode($project->name)])->label('Name:') ?>
+                <?= $form->field($model, 'name')->textInput(['value' => HTML::encode($project->name), 'autofocus' => true])->label('Name:') ?>
                 <?= $form->field($model, 'description')->textarea(['value' => HTML::encode($project->description),'row' => '6'])->label('Description:') ?>
                 <?= $form->field($model, 'abbreviation')->textInput(['value' => HTML::encode($project->abbreviation)])->label('Abbreviation:') ?>
 
