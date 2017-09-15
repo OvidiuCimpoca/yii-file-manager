@@ -5,10 +5,13 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
-$this->title = 'Edit User';
+$this->title = 'List Users';
 ?>
 <div class="site-index">
     <div class="body-content">
+        <div class="row breadcrumb">
+            <?= HTML::a('Users', ['list-users'])?>
+        </div>
         <div class="row">
             <div class="col-lg-6">
                 <?php

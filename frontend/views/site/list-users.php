@@ -33,5 +33,6 @@ $this->title = 'List Users';
             ?>
             </tbody>
         </table>
+        <?= HTML::a('New User', ['create-user'], ['class' => 'btn btn-lg btn-success'])?>
     </div>
 </div>

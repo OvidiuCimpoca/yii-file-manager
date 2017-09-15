@@ -20,6 +20,7 @@ use app\models\UpdateTaskForm;
 use app\models\EditTaskForm;
 use app\models\EditProjectForm;
 use app\models\EditUserForm;
+use app\models\CreateUserForm;
 use app\models\Task;
 use app\models\Project;
 
@@ -36,7 +37,8 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'signup', 'create-project', 'edit-project', 'create-task', 'edit-task', 'update-task', 'list-users', 'edit-user'],
+                'only' => ['logout', 'signup', 'create-project', 'edit-project', 'create-task',
+                    'edit-task', 'update-task', 'list-users', 'edit-user', 'create-user'],
                 'rules' => [
                     [
                         'actions' => ['signup'],
@@ -49,7 +51,8 @@ class SiteController extends Controller
                         'roles' => ['@'],
                     ],
                     [
-                        'actions' => ['create-project', 'edit-project', 'create-task', 'edit-task', 'update-task', 'list-users', 'edit-user'],
+                        'actions' => ['create-project', 'edit-project', 'create-task',
+                            'edit-task', 'update-task', 'list-users', 'edit-user', 'create-user'],
                         'allow' => true,
                         'roles' => ['@'],
                         'matchCallback' => function ($rule, $action) {
@@ -251,10 +254,6 @@ class SiteController extends Controller
     }
 
     // This is where my code starts
-    /*
-     * The why I thought it is that a project can have more tasks and
-     * we can have more projects.
-     * */
     // This is where I get project information for the project list
     public function actionProjects()
     {
@@ -549,7 +548,7 @@ class SiteController extends Controller
         $query = new \yii\db\Query;
         $query->select('user.*, permission.name as per_name')
             ->from('user')
-            ->leftJoin('permission', 'user.permission = permission.id');
+            ->leftJoin('permission', 'user.permission = permission.id')->orderBy('user.id');
         $command = $query->createCommand();
         $users = $command->queryAll();
         return $this->render('list-users', [
@@ -585,6 +584,22 @@ class SiteController extends Controller
         return $this->render('edit-user', [
             'model' => $model,
             'user' => $user,
+            'permissions' => $permissions,
+        ]);
+    }
+
+    public function actionCreateUser()
+    {
+        $model = new CreateUserForm();
+        if ($model->load(Yii::$app->request->post())) {
+            if ($user = $model->createUser()) {
+                return $this->goHome();
+            }
+        }
+
+        $permissions = getQueryList('permission', '*', 'id', 'name');
+        return $this->render('create-user', [
+            'model' => $model,
             'permissions' => $permissions,
         ]);
     }
