@@ -575,6 +575,15 @@ class SiteController extends Controller
             ->leftJoin('permission', 'user.permission = permission.id')->orderBy('user.id');
         $command = $query->createCommand();
         $users = $command->queryAll();
+
+        $request = Yii::$app->request;
+        $get = $request->get();
+        if(isset($get['page'])){
+            return $this->render('list-users', [
+                'users' => $users,
+                'page' => $get['page'],
+            ]);
+        }
         return $this->render('list-users', [
             'users' => $users,
         ]);
