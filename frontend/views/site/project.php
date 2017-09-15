@@ -21,15 +21,17 @@ $this->title = 'Project';
             <div class="row">
                 <table class="table">
                     <thead>
-                    <th>nr</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Status</th>
-                    <th>Priority</th>
-                    <th>Assigned to</th>
-                    <th>Created by</th>
-                    <th>Due date</th>
-                    <th></th>
+                        <tr>
+                            <th>nr</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Priority</th>
+                            <th>Assigned to</th>
+                            <th>Created by</th>
+                            <th>Due date</th>
+                            <th></th>
+                        </tr>
                     </thead>
                     <tbody>
                     <?php

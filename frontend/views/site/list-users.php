@@ -12,11 +12,13 @@ $this->title = 'List Users';
         <div class="row">
             <table class="table">
                 <thead>
-                <th>Id</th>
-                <th>Username</th>
-                <th>E-mail</th>
-                <th>Permission</th>
-                <th></th>
+                    <tr>
+                        <th>Id</th>
+                        <th>Username</th>
+                        <th>E-mail</th>
+                        <th>Permission</th>
+                        <th></th>
+                    </tr>
                 </thead>
                 <tbody>
                 <?php

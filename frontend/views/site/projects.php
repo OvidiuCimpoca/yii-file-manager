@@ -14,14 +14,16 @@ $this->title = 'Projects List';
             <div class="row">
                 <table class="table">
                     <thead>
-                    <th>Id</th>
-                    <th>Name</th>
-                    <th>Abbreviation</th>
-                    <th>Description</th>
-                    <th>Created by</th>
-                    <th>Created at</th>
-                    <th>Finished at</th>
-                    <th></th>
+                        <tr>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Abbreviation</th>
+                            <th>Description</th>
+                            <th>Created by</th>
+                            <th>Created at</th>
+                            <th>Finished at</th>
+                            <th></th>
+                        </tr>
                     </thead>
                     <tbody>
                     <?php
