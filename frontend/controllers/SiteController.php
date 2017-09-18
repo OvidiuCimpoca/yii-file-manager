@@ -38,7 +38,7 @@ class SiteController extends Controller
             'access' => [
                 'class' => AccessControl::className(),
                 'only' => ['logout', 'signup', 'create-project', 'edit-project', 'create-task',
-                    'edit-task', 'update-task', 'list-users', 'edit-user', 'create-user'],
+                    'edit-task', 'list-users', 'edit-user', 'create-user'],
                 'rules' => [
                     [
                         'actions' => ['signup'],
@@ -266,7 +266,7 @@ class SiteController extends Controller
             $editor = 1;
         }
 
-        $query = new \yii\db\Query;
+        $query = new yii\db\Query;
         $query->select('project.*, user.username')->from('project')->leftJoin('user', 'project.createdby = user.id');
         $command = $query->createCommand();
         $projects = $command->queryAll();
@@ -305,7 +305,7 @@ class SiteController extends Controller
         }
         $request = Yii::$app->request;
         $get = $request->get();
-        $query = new \yii\db\Query;
+        $query = new yii\db\Query;
         if($userStatus == 30){
             $query->select('task.*,
                 task_status.name as tsname,
@@ -368,7 +368,7 @@ class SiteController extends Controller
                 User::isUserBim(Yii::$app->user->identity->username)){
                 $editor = 1;
             }
-            $query = new \yii\db\Query;
+            $query = new yii\db\Query;
             $query->select('task.*,
                 project.name as projectname,
                 task_status.name as task_status_name,
@@ -540,7 +540,7 @@ class SiteController extends Controller
     }
 
     public function actionListUsers(){
-        $query = new \yii\db\Query;
+        $query = new yii\db\Query;
         $query->select('user.*, permission.name as per_name')
             ->from('user')
             ->leftJoin('permission', 'user.permission = permission.id')->orderBy('user.id');
@@ -622,7 +622,7 @@ function getQueryList($tableName, $select, $index, $value){
 }
 
 function getQueryListWhere($tableName, $select, $index, $value, $condition){
-    $query = new \yii\db\Query;
+    $query = new yii\db\Query;
     $query->select($select)->from($tableName)->where($condition);
     $command = $query->createCommand();
     $itemList = $command->queryAll();
