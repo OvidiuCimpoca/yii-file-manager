@@ -610,7 +610,7 @@ class SiteController extends Controller
 }
 
 function getQueryList($tableName, $select, $index, $value){
-    $query = new \yii\db\Query;
+    $query = new yii\db\Query;
     $query->select($select)->from($tableName);
     $command = $query->createCommand();
     $itemList = $command->queryAll();
