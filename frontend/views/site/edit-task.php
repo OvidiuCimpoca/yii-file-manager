@@ -15,7 +15,6 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
-$this->title = 'Edit Task';
 ?>
 <div class="site-index">
     <div class="body-content">
@@ -33,44 +32,52 @@ $this->title = 'Edit Task';
                 ?>
                 <?= $form->field($model, 'name')->textInput(['value' => HTML::encode($task->name), 'autofocus' => true])->label('Task name:') ?>
                 <?= $form->field($model, 'description')->textarea(['row' => '6', 'value' => HTML::encode($task['description']) ])->label('Description') ?>
-                <?= $form->field($model, 'developerid')->dropDownList(
-                    $users,
-                    ['options' => [ $task->developerid => ['Selected' => 'selected' ]],
-                        'prompt'=>'Select User', 'class' => '']
-                )->label('Assigned to:') ?>
-                <?= $form->field($model, 'projectid')->dropDownList(
-                    $projects,
-                    ['options' => [ $task->projectid => ['Selected' => 'selected' ]],
-                        'prompt'=>'Select Project', 'class' => '']
-                )->label('Project:') ?>
-                <?= $form->field($model, 'priority')->dropDownList(
-                    $priorities,
-                    ['options' => [ $task->priority => ['Selected' => 'selected' ]],
-                        'prompt'=>'Select Priority', 'class' => '']
-                )->label('Priority:') ?>
-                <?= $form->field($model, 'status')->dropDownList(
-                        $listStatus,
+                <?php if($isBim) { ?>
+                    <?= $form->field($model, 'developerid')->hiddenInput(['value' => HTML::encode($task->developerid)])->label(false) ?>
+                    <?= $form->field($model, 'projectid')->hiddenInput(['value' => HTML::encode($task->projectid)])->label(false) ?>
+                    <?= $form->field($model, 'priority')->hiddenInput(['value' => HTML::encode($task->priority)])->label(false) ?>
+                    <?= $form->field($model, 'status')->hiddenInput(['value' => HTML::encode($task->status)])->label(false) ?>
+                <?php } else{ ?>
+                    <?= $form->field($model, 'developerid')->dropDownList(
+                        $users,
+                        ['options' => [ $task->developerid => ['Selected' => 'selected' ]],
+                            'prompt'=>'Select User', 'class' => '']
+                    )->label('Assigned to:') ?>
+                    <?= $form->field($model, 'projectid')->dropDownList(
+                        $projects,
+                        ['options' => [ $task->projectid => ['Selected' => 'selected' ]],
+                            'prompt'=>'Select Project', 'class' => '']
+                    )->label('Project:') ?>
+                    <?= $form->field($model, 'priority')->dropDownList(
+                        $priorities,
                         ['options' => [ $task->priority => ['Selected' => 'selected' ]],
-                        'prompt'=>'Select Status', 'class' => '']
-                )->label('Status:') ?>
-                <?= $form->field($model, 'estimated')->textInput(['value' => HTML::encode($task->estimated)])->label('Estimated(format: hh:mm:ss):') ?>
-                <?= $form->field($model, 'elapsed')->textInput(['value' => HTML::encode($task->elapsed)])->label('Elapsed(format: hh:mm:ss):') ?>
-                <?php
-                $date = NULL;
-                if($task->due){
-                    $dueDate = new \DateTime($task->due);
-                    $date = $dueDate->format('Y-m-d');
-                }
-                ?>
-                <div class="form-group field-edittaskform-due">
-                    <?= HTML::label('Due:', ['for' => 'edittaskform-due'],['options' => ['class' => 'control-label']]) ?>
-                    <?= yii\jui\DatePicker::widget([
-                        'id' => 'edittaskform-due',
-                        'name' => 'EditTaskForm[due]',
-                        'value' => HTML::encode($date),
-                        'dateFormat' => 'yyyy-MM-dd'
-                    ]) ?>
-                </div>
+                            'prompt'=>'Select Priority', 'class' => '']
+                    )->label('Priority:') ?>
+                    <?= $form->field($model, 'status')->dropDownList(
+                            $listStatus,
+                            ['options' => [ $task->status => ['Selected' => 'selected' ]],
+                            'prompt'=>'Select Status', 'class' => '']
+                    )->label('Status:') ?>
+                    <?= $form->field($model, 'estimated')->textInput(['value' => HTML::encode($task->estimated)])->label('Estimated(format: hh:mm:ss):') ?>
+                    <?= $form->field($model, 'elapsed')->textInput(['value' => HTML::encode($task->elapsed)])->label('Elapsed(format: hh:mm:ss):') ?>
+                    <?php
+                    $date = NULL;
+                    if($task->due){
+                        $dueDate = new \DateTime($task->due);
+                        $date = $dueDate->format('Y-m-d');
+                    }
+                    ?>
+                    <div class="form-group field-edittaskform-due">
+                        <?= HTML::label('Due:', ['for' => 'edittaskform-due'],['options' => ['class' => 'control-label']]) ?>
+                        <?= yii\jui\DatePicker::widget([
+                            'id' => 'edittaskform-due',
+                            'name' => 'EditTaskForm[due]',
+                            'value' => HTML::encode($date),
+                            'dateFormat' => 'yyyy-MM-dd'
+                        ]) ?>
+                    </div>
+                <?php } ?>
+
                 <div class="form-group">
                     <div class="col-lg offset-1 col-lg-6">
                         <?= Html::submitButton('Save Changes', ['class' => 'btn btn-primary'])?>

@@ -52,7 +52,7 @@ class SiteController extends Controller
                     ],
                     [
                         'actions' => ['create-project', 'edit-project', 'create-task',
-                            'edit-task', 'update-task', 'list-users', 'edit-user', 'create-user'],
+                            'edit-task', 'list-users', 'edit-user', 'create-user'],
                         'allow' => true,
                         'roles' => ['@'],
                         'matchCallback' => function ($rule, $action) {
@@ -60,7 +60,7 @@ class SiteController extends Controller
                         }
                     ],
                     [
-                        'actions' => ['create-project', 'edit-project', 'create-task', 'edit-task', 'update-task'],
+                        'actions' => ['create-project', 'edit-project', 'create-task', 'edit-task'],
                         'allow' => true,
                         'roles' => ['@'],
                         'matchCallback' => function ($rule, $action) {
@@ -68,7 +68,7 @@ class SiteController extends Controller
                         }
                     ],
                     [
-                        'actions' => ['create-task', 'update-task'],
+                        'actions' => ['create-task', 'edit-task'],
                         'allow' => true,
                         'roles' => ['@'],
                         'matchCallback' => function ($rule, $action) {
@@ -359,20 +359,14 @@ class SiteController extends Controller
     // This is where I get task information for the task page
     public function actionTask()
     {
-        $userStatus = 0;
-        if(!Yii::$app->user->isGuest){
-            $userStatus = Yii::$app->user->identity->permission;
-        }
         $request = Yii::$app->request;
         $get = $request->get();
         if(isset($get['id'])){
             $editor = 0;
-            if($userStatus == 10 || $userStatus == 20){
+            if(User::isUserAdmin(Yii::$app->user->identity->username) ||
+                User::isUserPM(Yii::$app->user->identity->username) ||
+                User::isUserBim(Yii::$app->user->identity->username)){
                 $editor = 1;
-            }
-            $intelligenceMember = 0;
-            if($userStatus == 50){
-                $intelligenceMember = 1;
             }
             $query = new \yii\db\Query;
             $query->select('task.*,
@@ -394,7 +388,6 @@ class SiteController extends Controller
             return $this->render('task', [
                 'task' => $task,
                 'editor' => $editor,
-                'intelligenceMember' => $intelligenceMember,
             ]);
         }
 
@@ -448,31 +441,6 @@ class SiteController extends Controller
         ]);
     }
 
-    public function actionUpdateTask(){
-        $model = new UpdateTaskForm();
-        $request = Yii::$app->request;
-        $get = $request->get();
-
-        if($model->load(Yii::$app->request->post())  && $model->validate()){
-            $formPost = Yii::$app->request->post()['UpdateTaskForm'];
-            $task = Task::findOne($get['id']);
-            $task->name = $formPost['name'];
-            $task->description = $formPost['description'];
-            $task->update();
-            return $this->render('update-task-confirm', [
-                'name' => $formPost['name'],
-            ]);
-        }
-
-        $task = Task::findOne($get['id']);
-        $projects = getQueryList('project', 'id, name', 'id', 'name');
-        return $this->render('update-task', [
-            'model' => $model,
-            'task' => $task,
-            'projects' => $projects,
-        ]);
-    }
-
     public function actionEditTask(){
         $model = new EditTaskForm();
         $request = Yii::$app->request;
@@ -483,12 +451,14 @@ class SiteController extends Controller
             $task = Task::findOne($get['id']);
             $task->name = $formPost['name'];
             $task->description = $formPost['description'];
-            $task->developerid = $formPost['developerid'];
-            $task->status = $formPost['status'];
-            $task->priority = $formPost['priority'];
-            $task->estimated = $formPost['estimated'];
-            $task->elapsed = $formPost['elapsed'];
-            $task->due = $formPost['due'];
+            if(!User::isUserBim(Yii::$app->user->identity->username)){
+                $task->developerid = $formPost['developerid'];
+                $task->status = $formPost['status'];
+                $task->priority = $formPost['priority'];
+                $task->estimated = $formPost['estimated'];
+                $task->elapsed = $formPost['elapsed'];
+                $task->due = $formPost['due'];
+            }
             $task->update();
 
             return $this->render('edit-task-confirm', [
@@ -511,6 +481,7 @@ class SiteController extends Controller
             'priorities' => $priorities,
             'users' => $users,
             'projects' => $projects,
+            'isBim' => User::isUserBim(Yii::$app->user->identity->username),
         ]);
     }
 

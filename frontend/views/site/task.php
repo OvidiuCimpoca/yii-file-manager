@@ -60,12 +60,7 @@ $this->title = 'Task';
                             <span>Due date: </span> <?= HTML::encode($task['due']) ?>
                         </div>
                         <div class="col-lg-12">
-                            <?php if($intelligenceMember){ ?>
-                                <?= HTML::a('Update Task', ['update-task', 'id' => $task['id']], ['class' => 'btn btn-success']) ?>
-                            <?php
-                            }
-                            if($editor) {
-                            ?>
+                            <?php if($editor) { ?>
                                 <?= HTML::a('Edit Task', ['edit-task', 'id' => $task['id']], ['class' => 'btn btn-success']) ?>
                             <?php } ?>
                         </div>
