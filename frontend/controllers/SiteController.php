@@ -574,7 +574,7 @@ class SiteController extends Controller
             $user->email = $formPost['email'];
             $user->permission = $formPost['permission'];
             $user->update();
-            $query = new \yii\db\Query;
+            $query = new yii\db\Query;
             $query->select('user.*, permission.name as per_name')
                 ->from('user')
                 ->leftJoin('permission', 'user.permission = permission.id');
