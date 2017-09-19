@@ -397,18 +397,7 @@ class SiteController extends Controller
 
         if($model->load(Yii::$app->request->post())  && $model->validate()){
             $formPost = Yii::$app->request->post()['EditTaskForm'];
-            $task = Task::findOne($get['id']);
-            $task->name = $formPost['name'];
-            $task->description = $formPost['description'];
-            if(!User::isUserBim(Yii::$app->user->identity->username)){
-                $task->developerid = $formPost['developerid'];
-                $task->status = $formPost['status'];
-                $task->priority = $formPost['priority'];
-                $task->estimated = $formPost['estimated'];
-                $task->elapsed = $formPost['elapsed'];
-                $task->due = $formPost['due'];
-            }
-            $task->update();
+            Task::updateTask($get['id'], $formPost);
 
             return $this->render('edit-task-confirm', [
                 'name' => $formPost['name'],
@@ -441,13 +430,7 @@ class SiteController extends Controller
         if($model->load(Yii::$app->request->post()) && $model->validate()){
 
             $formPost = Yii::$app->request->post()['CreateProjectForm'];
-            $project = new Project();
-            $project->name = $formPost['name'];
-            $project->description = $formPost['description'];
-            $project->abbreviation = $formPost['abbreviation'];
-            $project->createdby = $formPost['createdby'];
-            $project->createdat = $formPost['createdat'];
-            $project->save();
+            Project::saveProject($formPost);
 
             return $this->render('create-project-confirm', [
                 'name' => $formPost['name'],
@@ -467,14 +450,10 @@ class SiteController extends Controller
         $model = new EditProjectForm();
         $request = Yii::$app->request;
         $get = $request->get();
-        $project = Project::findOne($get['id']);
 
         if($model->load(Yii::$app->request->post()) && $model->validate()){
             $formPost = Yii::$app->request->post()['EditProjectForm'];
-            $project->name = $formPost['name'];
-            $project->description = $formPost['description'];
-            $project->abbreviation = $formPost['abbreviation'];
-            $project->update();
+            Project::updateProject($get['id'], $formPost);
 
             return $this->render('edit-project-confirm', [
                 'model' => $model,
@@ -484,17 +463,12 @@ class SiteController extends Controller
 
         return $this->render('edit-project', [
             'model' => $model,
-            'project' => $project,
+            'project' => Project::getProject($get['id']),
         ]);
     }
 
     public function actionListUsers(){
-        $query = new yii\db\Query;
-        $query->select('user.*, permission.name as per_name')
-            ->from('user')
-            ->leftJoin('permission', 'user.permission = permission.id')->orderBy('user.id');
-        $command = $query->createCommand();
-        $users = $command->queryAll();
+        $users = User::listUsers();
 
         $request = Yii::$app->request;
         $get = $request->get();

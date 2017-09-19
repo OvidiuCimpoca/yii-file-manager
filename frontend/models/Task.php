@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use common\models\User;
 
 class Task extends yii\db\ActiveRecord
 {
@@ -82,5 +83,21 @@ class Task extends yii\db\ActiveRecord
         $task->createdat = $formPost['createdat'];
         $task->due = $formPost['due'];
         return $task->save();
+    }
+
+    public static function updateTask($getId, $formPost)
+    {
+        $task = Task::findOne($getId);
+        $task->name = $formPost['name'];
+        $task->description = $formPost['description'];
+        if(!User::isUserBim(Yii::$app->user->identity->username)){
+            $task->developerid = $formPost['developerid'];
+            $task->status = $formPost['status'];
+            $task->priority = $formPost['priority'];
+            $task->estimated = $formPost['estimated'];
+            $task->elapsed = $formPost['elapsed'];
+            $task->due = $formPost['due'];
+        }
+        return $task->update();
     }
 }

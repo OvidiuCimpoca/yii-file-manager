@@ -195,29 +195,57 @@ class User extends ActiveRecord implements IdentityInterface
         $this->password_reset_token = null;
     }
 
-    public static function isUserAdmin($username){
-        if(static::findOne(['username' => $username, 'permission' => self::PERMISSION_ADMIN])){
+    public static function listUsers()
+    {
+        $query = new yii\db\Query;
+        $query->select('user.*, permission.name as per_name')
+            ->from('user')
+            ->leftJoin('permission', 'user.permission = permission.id')->orderBy('user.id');
+        $command = $query->createCommand();
+        $users = $command->queryAll();
+        return $users;
+    }
+
+    // TODO Create the edit user and create user functions
+    public static function editUser()
+    {
+
+    }
+
+    public static function createUser()
+    {}
+
+    public static function isUserAdmin($username)
+    {
+        if(static::findOne(['username' => $username, 'permission' => self::PERMISSION_ADMIN]))
+        {
             return true;
         }
         return false;
     }
 
-    public static function isUserPM($username){
-        if(static::findOne(['username' => $username, 'permission' => self::PERMISSION_PM])){
+    public static function isUserPM($username)
+    {
+        if(static::findOne(['username' => $username, 'permission' => self::PERMISSION_PM]))
+        {
             return true;
         }
         return false;
     }
 
-    public static function isUserDev($username){
-        if(static::findOne(['username' => $username, 'permission' => self::PERMISSION_DEV])){
+    public static function isUserDev($username)
+    {
+        if(static::findOne(['username' => $username, 'permission' => self::PERMISSION_DEV]))
+        {
             return true;
         }
         return false;
     }
 
-    public static function isUserBim($username){
-        if(static::findOne(['username' => $username, 'permission' => self::PERMISSION_BIM])){
+    public static function isUserBim($username)
+    {
+        if(static::findOne(['username' => $username, 'permission' => self::PERMISSION_BIM]))
+        {
             return true;
         }
         return false;
