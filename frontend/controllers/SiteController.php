@@ -16,7 +16,6 @@ use frontend\models\SignupForm;
 use frontend\models\ContactForm;
 use app\models\CreateTaskForm;
 use app\models\CreateProjectForm;
-use app\models\UpdateTaskForm;
 use app\models\EditTaskForm;
 use app\models\EditProjectForm;
 use app\models\EditUserForm;
